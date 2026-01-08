@@ -198,6 +198,17 @@ func TestValidate(t *testing.T) {
 	}
 }
 
+func TestValidateMissingOBJRTarget(t *testing.T) {
+	// PDF with StructTree containing an OBJR that references a non-existent object.
+	// In relaxed mode (default), this should pass validation.
+	msg := "TestValidateMissingOBJRTarget"
+	inFile := filepath.Join(inDir, "missing_objr_target.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("%s: %v\n", msg, err)
+	}
+}
+
 func TestManipulateContext(t *testing.T) {
 	msg := "TestManipulateContext"
 	inFile := filepath.Join(inDir, "5116.DCT_Filter.pdf")
