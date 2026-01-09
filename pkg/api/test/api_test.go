@@ -209,6 +209,20 @@ func TestValidateMissingOBJRTarget(t *testing.T) {
 	}
 }
 
+func TestValidateImageXObjectWithOCMD(t *testing.T) {
+	// PDF with an Image XObject that has an /OC entry pointing to an OCMD.
+	// This occurs when Ghostscript preprocesses PDFs containing Form XObjects
+	// with optional content (e.g., from Adobe Fill & Sign), converting them
+	// to Image XObjects while preserving the /OC -> OCMD reference.
+	// Valid per PDF spec ISO 32000-1:2008, Section 8.11.3.3.
+	msg := "TestValidateImageXObjectWithOCMD"
+	inFile := filepath.Join(inDir, "image_xobject_with_ocmd.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("%s: %v\n", msg, err)
+	}
+}
+
 func TestManipulateContext(t *testing.T) {
 	msg := "TestManipulateContext"
 	inFile := filepath.Join(inDir, "5116.DCT_Filter.pdf")
