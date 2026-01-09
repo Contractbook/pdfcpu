@@ -209,6 +209,18 @@ func TestValidateMissingOBJRTarget(t *testing.T) {
 	}
 }
 
+func TestValidateOCMDInOCGsArray(t *testing.T) {
+	// PDF with an XObject that has an OC entry pointing to an OCMD,
+	// where the OCMD's OCGs array contains another OCMD (nested OCMD).
+	// This is valid per PDF spec 8.11.2.2.
+	msg := "TestValidateOCMDInOCGsArray"
+	inFile := filepath.Join(inDir, "xobject_with_ocmd.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("%s: %v\n", msg, err)
+	}
+}
+
 func TestManipulateContext(t *testing.T) {
 	msg := "TestManipulateContext"
 	inFile := filepath.Join(inDir, "5116.DCT_Filter.pdf")

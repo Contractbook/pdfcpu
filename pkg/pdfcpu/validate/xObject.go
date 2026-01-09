@@ -651,7 +651,12 @@ func validateEntryOC(xRefTable *model.XRefTable, d types.Dict, dictName, entryNa
 	}
 
 	if d1 != nil {
-		err = validateOptionalContentGroupDict(xRefTable, d1, sinceVersion)
+		t := d1.NameEntry("Type")
+		if t != nil && *t == "OCMD" {
+			err = validateOptionalContentMembershipDict(xRefTable, d1, sinceVersion)
+		} else {
+			err = validateOptionalContentGroupDict(xRefTable, d1, sinceVersion)
+		}
 	}
 
 	return err
