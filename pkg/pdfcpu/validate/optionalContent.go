@@ -176,12 +176,7 @@ func validateOptionalContentGroupArray(xRefTable *model.XRefTable, d types.Dict,
 			continue
 		}
 
-		t := d.NameEntry("Type")
-		if t != nil && *t == "OCMD" {
-			err = validateOptionalContentMembershipDict(xRefTable, d, sinceVersion)
-		} else {
-			err = validateOptionalContentGroupDict(xRefTable, d, sinceVersion)
-		}
+		err = validateOptionalContentGroupDict(xRefTable, d, sinceVersion)
 		if err != nil {
 			return err
 		}
@@ -213,10 +208,6 @@ func validateOCGs(xRefTable *model.XRefTable, d types.Dict, dictName, entryName 
 
 	d1, ok := o.(types.Dict)
 	if ok {
-		t := d1.NameEntry("Type")
-		if t != nil && *t == "OCMD" {
-			return validateOptionalContentMembershipDict(xRefTable, d1, sinceVersion)
-		}
 		return validateOptionalContentGroupDict(xRefTable, d1, sinceVersion)
 	}
 

@@ -209,12 +209,14 @@ func TestValidateMissingOBJRTarget(t *testing.T) {
 	}
 }
 
-func TestValidateOCMDInOCGsArray(t *testing.T) {
-	// PDF with an XObject that has an OC entry pointing to an OCMD,
-	// where the OCMD's OCGs array contains another OCMD (nested OCMD).
-	// This is valid per PDF spec 8.11.2.2.
-	msg := "TestValidateOCMDInOCGsArray"
-	inFile := filepath.Join(inDir, "xobject_with_ocmd.pdf")
+func TestValidateImageXObjectWithOCMD(t *testing.T) {
+	// PDF with an Image XObject that has an /OC entry pointing to an OCMD.
+	// This occurs when Ghostscript preprocesses PDFs containing Form XObjects
+	// with optional content (e.g., from Adobe Fill & Sign), converting them
+	// to Image XObjects while preserving the /OC -> OCMD reference.
+	// Valid per PDF spec ISO 32000-1:2008, Section 8.11.3.3.
+	msg := "TestValidateImageXObjectWithOCMD"
+	inFile := filepath.Join(inDir, "image_xobject_with_ocmd.pdf")
 
 	if err := api.ValidateFile(inFile, nil); err != nil {
 		t.Fatalf("%s: %v\n", msg, err)
