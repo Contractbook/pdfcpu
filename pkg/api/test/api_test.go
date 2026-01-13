@@ -223,6 +223,20 @@ func TestValidateImageXObjectWithOCMD(t *testing.T) {
 	}
 }
 
+// TestValidateOCPropertiesMissingD tests that PDFs with OCProperties containing
+// OCGs but missing the required /D entry validate successfully in relaxed mode.
+func TestValidateOCPropertiesMissingD(t *testing.T) {
+	msg := "TestValidateOCPropertiesMissingD"
+	inFile := filepath.Join(inDir, "ocproperties_missing_d.pdf")
+
+	// Validate with relaxed mode (default) - should pass
+	confRelaxed := model.NewDefaultConfiguration()
+	confRelaxed.ValidationMode = model.ValidationRelaxed
+	if err := api.ValidateFile(inFile, confRelaxed); err != nil {
+		t.Fatalf("%s: relaxed validation should pass: %v\n", msg, err)
+	}
+}
+
 func TestManipulateContext(t *testing.T) {
 	msg := "TestManipulateContext"
 	inFile := filepath.Join(inDir, "5116.DCT_Filter.pdf")
