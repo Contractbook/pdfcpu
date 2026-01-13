@@ -423,7 +423,11 @@ func validateOCProperties(xRefTable *model.XRefTable, rootDict types.Dict, requi
 	}
 
 	// "D" required dict, default viewing optional content configuration dict.
-	d1, err := validateDictEntry(xRefTable, d, dictName, "D", REQUIRED, sinceVersion, nil)
+	r = REQUIRED
+	if xRefTable.ValidationMode == model.ValidationRelaxed {
+		r = OPTIONAL
+	}
+	d1, err := validateDictEntry(xRefTable, d, dictName, "D", r, sinceVersion, nil)
 	if err != nil {
 		return err
 	}
