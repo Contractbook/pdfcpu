@@ -120,3 +120,14 @@ func TestRemoveSignatures(t *testing.T) {
 		t.Fatalf("%s: %v\n", msg, err)
 	}
 }
+
+func TestValidate_VendorExtensionFieldType(t *testing.T) {
+	// Test that PDFs with vendor extension field types validate successfully in relaxed mode.
+	// This tests e.g. KSI (Keyless Signature Infrastructure) used by Guardtime/Scrive.
+	// Like poppler, pdfcpu should accept unknown FT values in relaxed mode rather than rejecting them.
+	inFile := filepath.Join(inDir, "ksi_signature.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("TestValidate_VendorExtensionFieldType: %v\n", err)
+	}
+}
