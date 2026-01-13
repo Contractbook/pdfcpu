@@ -356,7 +356,13 @@ func validateFormFieldDictEntries(xRefTable *model.XRefTable, objNr, incr int, d
 	dictName := "formFieldDict"
 
 	// FT: name, Btn,Tx,Ch,Sig
-	validate := func(s string) bool { return types.MemberOf(s, []string{"Btn", "Tx", "Ch", "Sig"}) }
+	// In relaxed mode, accept any FT value to handle vendor extensions (e.g. KSI for Guardtime signatures).
+	var validate func(string) bool
+	if xRefTable.ValidationMode == model.ValidationRelaxed {
+		validate = nil // Accept any value
+	} else {
+		validate = func(s string) bool { return types.MemberOf(s, []string{"Btn", "Tx", "Ch", "Sig"}) }
+	}
 	fieldType, err := validateNameEntry(xRefTable, d, dictName, "FT", terminalNode && inFieldType == nil, model.V10, validate)
 	if err != nil {
 		return nil, false, err
