@@ -198,6 +198,29 @@ func TestValidate(t *testing.T) {
 	}
 }
 
+// TestValidateWatermarkAnnotationV14 tests that PDFs with Watermark annotations
+// (introduced in PDF 1.6) validate successfully in relaxed mode even when the
+// PDF declares version 1.4. This is common with scanner software like EPSON Scan
+// that uses older version headers but includes newer features.
+func TestValidateWatermarkAnnotationV14(t *testing.T) {
+	msg := "TestValidateWatermarkAnnotationV14"
+	inFile := filepath.Join(inDir, "watermark_annot_v14.pdf")
+
+	// Validate with relaxed mode - should pass (allows Watermark in v1.4+)
+	confRelaxed := model.NewDefaultConfiguration()
+	confRelaxed.ValidationMode = model.ValidationRelaxed
+	if err := api.ValidateFile(inFile, confRelaxed); err != nil {
+		t.Fatalf("%s: relaxed validation should pass: %v\n", msg, err)
+	}
+
+	// Validate with strict mode - should fail (Watermark requires v1.6)
+	confStrict := model.NewDefaultConfiguration()
+	confStrict.ValidationMode = model.ValidationStrict
+	if err := api.ValidateFile(inFile, confStrict); err == nil {
+		t.Fatalf("%s: strict validation should fail for Watermark in PDF 1.4\n", msg)
+	}
+}
+
 func TestManipulateContext(t *testing.T) {
 	msg := "TestManipulateContext"
 	inFile := filepath.Join(inDir, "5116.DCT_Filter.pdf")
