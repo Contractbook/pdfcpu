@@ -237,6 +237,21 @@ func TestValidateOCPropertiesMissingD(t *testing.T) {
 	}
 }
 
+// TestValidateFreeTextEmptyArrays tests that PDFs with FreeText annotations
+// containing empty CL, RD, and LE arrays validate successfully in relaxed mode.
+// This is common with "Microsoft: Print To PDF" which emits placeholder empty arrays.
+func TestValidateFreeTextEmptyArrays(t *testing.T) {
+	msg := "TestValidateFreeTextEmptyArrays"
+	inFile := filepath.Join(inDir, "freetext_empty_arrays.pdf")
+
+	// Validate with relaxed mode - should pass
+	confRelaxed := model.NewDefaultConfiguration()
+	confRelaxed.ValidationMode = model.ValidationRelaxed
+	if err := api.ValidateFile(inFile, confRelaxed); err != nil {
+		t.Fatalf("%s: relaxed validation should pass: %v\n", msg, err)
+	}
+}
+
 // TestValidateWatermarkAnnotationV14 tests that PDFs with Watermark annotations
 // (introduced in PDF 1.6) validate successfully in relaxed mode even when the
 // PDF declares version 1.4. This is common with scanner software like EPSON Scan
