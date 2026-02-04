@@ -141,6 +141,11 @@ func validateStructElementDictEntryKArray(xRefTable *model.XRefTable, a types.Ar
 		if ok {
 			valid, err := xRefTable.IsValid(ir)
 			if err != nil {
+				// In relaxed mode, tolerate references to non-existent objects
+				// in the StructTree K array.
+				if xRefTable.ValidationMode == model.ValidationRelaxed {
+					continue
+				}
 				return err
 			}
 			if valid {

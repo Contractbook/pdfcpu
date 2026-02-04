@@ -204,6 +204,18 @@ func TestValidate(t *testing.T) {
 	}
 }
 
+func TestValidateMissingKArrayRef(t *testing.T) {
+	// PDF with StructTree containing K array entries that reference non-existent objects.
+	// This can happen with Apple Pages PDFs where the StructTree has dangling references.
+	// In relaxed mode (default), this should pass validation.
+	msg := "TestValidateMissingKArrayRef"
+	inFile := filepath.Join(inDir, "missing_k_array_ref.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("%s: %v\n", msg, err)
+	}
+}
+
 // TestValidateOCPropertiesMissingD tests that PDFs with OCProperties containing
 // OCGs but missing the required /D entry validate successfully in relaxed mode.
 func TestValidateOCPropertiesMissingD(t *testing.T) {
