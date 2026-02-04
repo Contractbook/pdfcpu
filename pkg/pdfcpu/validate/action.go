@@ -691,6 +691,13 @@ func validateJavaScript(xRefTable *model.XRefTable, d types.Dict, dictName, entr
 	case types.StreamDict:
 		// no further processing
 
+	case types.Name:
+		// Some PDF generators incorrectly use a Name instead of a string for JS.
+		// Accept in relaxed mode.
+		if xRefTable.ValidationMode != model.ValidationRelaxed {
+			err = errors.Errorf("validateJavaScript: invalid type (Name instead of string)\n")
+		}
+
 	default:
 		err = errors.Errorf("validateJavaScript: invalid type\n")
 

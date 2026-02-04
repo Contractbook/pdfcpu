@@ -221,6 +221,18 @@ func TestValidateMissingKArrayRef(t *testing.T) {
 	}
 }
 
+func TestValidateJavaScriptNameType(t *testing.T) {
+	// PDF with JavaScript action where /JS is a Name instead of a string literal.
+	// Some PDF generators incorrectly use Name type for the JavaScript code.
+	// In relaxed mode (default), this should pass validation.
+	msg := "TestValidateJavaScriptNameType"
+	inFile := filepath.Join(inDir, "javascript_name_type.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("%s: %v\n", msg, err)
+	}
+}
+
 func TestValidateImageXObjectWithOCMD(t *testing.T) {
 	// PDF with an Image XObject that has an /OC entry pointing to an OCMD.
 	// This occurs when Ghostscript preprocesses PDFs containing Form XObjects
