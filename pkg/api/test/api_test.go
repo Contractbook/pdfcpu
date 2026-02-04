@@ -216,6 +216,18 @@ func TestValidateMissingKArrayRef(t *testing.T) {
 	}
 }
 
+func TestValidateJavaScriptNameType(t *testing.T) {
+	// PDF with JavaScript action where /JS is a Name instead of a string literal.
+	// Some PDF generators incorrectly use Name type for the JavaScript code.
+	// In relaxed mode (default), this should pass validation.
+	msg := "TestValidateJavaScriptNameType"
+	inFile := filepath.Join(inDir, "javascript_name_type.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("%s: %v\n", msg, err)
+	}
+}
+
 // TestValidateOCPropertiesMissingD tests that PDFs with OCProperties containing
 // OCGs but missing the required /D entry validate successfully in relaxed mode.
 func TestValidateOCPropertiesMissingD(t *testing.T) {
