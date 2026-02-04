@@ -209,6 +209,18 @@ func TestValidateMissingOBJRTarget(t *testing.T) {
 	}
 }
 
+func TestValidateMissingKArrayRef(t *testing.T) {
+	// PDF with StructTree containing K array entries that reference non-existent objects.
+	// This can happen with Apple Pages PDFs where the StructTree has dangling references.
+	// In relaxed mode (default), this should pass validation.
+	msg := "TestValidateMissingKArrayRef"
+	inFile := filepath.Join(inDir, "missing_k_array_ref.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("%s: %v\n", msg, err)
+	}
+}
+
 func TestValidateImageXObjectWithOCMD(t *testing.T) {
 	// PDF with an Image XObject that has an /OC entry pointing to an OCMD.
 	// This occurs when Ghostscript preprocesses PDFs containing Form XObjects
