@@ -299,6 +299,16 @@ func TestValidateWatermarkAnnotationV14(t *testing.T) {
 	}
 }
 
+func TestValidateNonstandardPageLayout(t *testing.T) {
+	// PDF created by Adobe Acrobat PDFMaker may use non-standard PageLayout "PDLayoutDontCare"
+	msg := "TestValidateNonstandardPageLayout"
+	inFile := filepath.Join(inDir, "nonstandard_page_layout.pdf")
+
+	if err := api.ValidateFile(inFile, nil); err != nil {
+		t.Fatalf("%s: %v\n", msg, err)
+	}
+}
+
 func TestManipulateContext(t *testing.T) {
 	msg := "TestManipulateContext"
 	inFile := filepath.Join(inDir, "5116.DCT_Filter.pdf")
