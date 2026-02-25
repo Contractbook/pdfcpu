@@ -358,8 +358,8 @@ func validateNamedDestinations(xRefTable *model.XRefTable, rootDict types.Dict, 
 }
 
 func pageLayoutValidator(v model.Version) func(s string) bool {
-	// "UseNone", "Continuous", "oneside", "useoutlines" is out of spec.
-	layouts := []string{"SinglePage", "OneColumn", "TwoColumnLeft", "TwoColumnRight", "UseNone", "Continuous", "oneside", "TwoPageRight", "useoutlines"}
+	// "UseNone", "Continuous", "oneside", "useoutlines", "PDLayoutDontCare" are out of spec.
+	layouts := []string{"SinglePage", "OneColumn", "TwoColumnLeft", "TwoColumnRight", "UseNone", "Continuous", "oneside", "TwoPageRight", "useoutlines", "PDLayoutDontCare"}
 	if v >= model.V15 {
 		layouts = append(layouts, "TwoPageLeft", "TwoPageRight")
 	}
