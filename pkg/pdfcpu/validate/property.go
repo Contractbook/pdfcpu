@@ -63,6 +63,18 @@ func validatePropertiesDict(xRefTable *model.XRefTable, o types.Object) error {
 
 		case "Contents":
 			logProp("known", key, val)
+			// In a marked-content property list, /Contents may be a text string
+			// (e.g. Tagged-PDF Pagination artifacts per 14.8.2.2.2), not a stream.
+			o, err := xRefTable.Dereference(val)
+			if err != nil {
+				return err
+			}
+			if _, ok := o.(types.StringLiteral); ok {
+				break
+			}
+			if _, ok := o.(types.HexLiteral); ok {
+				break
+			}
 			if _, err = validateStreamDict(xRefTable, val); err != nil {
 				return err
 			}
