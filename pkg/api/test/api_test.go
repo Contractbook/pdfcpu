@@ -261,6 +261,24 @@ func TestValidateOCPropertiesMissingD(t *testing.T) {
 	}
 }
 
+// TestValidatePropertyContentsString tests that PDFs whose marked-content
+// property list carries /Contents as a text string (e.g. a Tagged-PDF
+// Pagination artifact per ISO 32000-1:2008, 14.6.2 + 14.8.2.2.2) validate
+// successfully in relaxed mode. Such property lists are emitted, for
+// example, when Ghostscript's pdfwrite device promotes inline marked-content
+// property dicts into indirect entries of the page /Resources/Properties
+// resource dict.
+func TestValidatePropertyContentsString(t *testing.T) {
+	msg := "TestValidatePropertyContentsString"
+	inFile := filepath.Join(inDir, "property_contents_string.pdf")
+
+	confRelaxed := model.NewDefaultConfiguration()
+	confRelaxed.ValidationMode = model.ValidationRelaxed
+	if err := api.ValidateFile(inFile, confRelaxed); err != nil {
+		t.Fatalf("%s: relaxed validation should pass: %v\n", msg, err)
+	}
+}
+
 // TestValidateFreeTextEmptyArrays tests that PDFs with FreeText annotations
 // containing empty CL, RD, and LE arrays validate successfully in relaxed mode.
 // This is common with "Microsoft: Print To PDF" which emits placeholder empty arrays.
