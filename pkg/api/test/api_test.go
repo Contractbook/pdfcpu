@@ -260,6 +260,22 @@ func TestValidatePropertyContentsString(t *testing.T) {
 	}
 }
 
+// TestValidateFreeTextEmptyArrays tests that PDFs with FreeText annotations
+// containing empty RD and LE arrays validate successfully in relaxed mode.
+// This is common with "Microsoft: Print To PDF" which emits placeholder empty
+// arrays. (The empty CL case is already handled by upstream.)
+func TestValidateFreeTextEmptyArrays(t *testing.T) {
+	msg := "TestValidateFreeTextEmptyArrays"
+	inFile := filepath.Join(inDir, "freetext_empty_arrays.pdf")
+
+	// Validate with relaxed mode - should pass
+	confRelaxed := model.NewDefaultConfiguration()
+	confRelaxed.ValidationMode = model.ValidationRelaxed
+	if err := api.ValidateFile(inFile, confRelaxed); err != nil {
+		t.Fatalf("%s: relaxed validation should pass: %v\n", msg, err)
+	}
+}
+
 func TestValidateNonstandardPageLayout(t *testing.T) {
 	// PDF created by Adobe Acrobat PDFMaker may use non-standard PageLayout "PDLayoutDontCare"
 	msg := "TestValidateNonstandardPageLayout"

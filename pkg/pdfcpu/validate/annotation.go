@@ -449,9 +449,14 @@ func validateAnnotationDictFreeTextPart2(xRefTable *model.XRefTable, d types.Dic
 	sinceVersion = model.V16
 	if xRefTable.ValidationMode == model.ValidationRelaxed {
 		sinceVersion = model.V14
-	}
-	if _, err := validateRectangleEntry(xRefTable, d, dictName, "RD", OPTIONAL, sinceVersion, nil); err != nil {
-		return err
+		// In relaxed mode, accept empty RD array (some PDF producers emit /RD [])
+		if _, err := validateNumberArrayEntry(xRefTable, d, dictName, "RD", OPTIONAL, sinceVersion, func(a types.Array) bool { return len(a) == 0 || len(a) == 4 }); err != nil {
+			return err
+		}
+	} else {
+		if _, err := validateRectangleEntry(xRefTable, d, dictName, "RD", OPTIONAL, sinceVersion, nil); err != nil {
+			return err
+		}
 	}
 
 	// BS, optional, border style dict, since V1.6
@@ -467,6 +472,12 @@ func validateAnnotationDictFreeTextPart2(xRefTable *model.XRefTable, d types.Dic
 	sinceVersion = model.V16
 	if xRefTable.ValidationMode == model.ValidationRelaxed {
 		sinceVersion = model.V14
+		// In relaxed mode, skip LE validation if it's not a name (some PDF producers emit /LE [])
+		if o, found := d.Find("LE"); found {
+			if _, ok := o.(types.Name); !ok {
+				return nil
+			}
+		}
 	}
 	_, err := validateNameEntry(xRefTable, d, dictName, "LE", OPTIONAL, sinceVersion, nil)
 
