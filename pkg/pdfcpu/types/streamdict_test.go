@@ -70,6 +70,85 @@ func TestDecodePreservesTerminalOpaqueImageStream(t *testing.T) {
 	}
 }
 
+func TestDecodeSkipsCryptFilter(t *testing.T) {
+	identity := NewDict()
+	identity.Insert("Type", Name("CryptFilterDecodeParms"))
+	identity.Insert("Name", Name("Identity"))
+
+	for _, tt := range []struct {
+		name     string
+		raw      string
+		pipeline []PDFFilter
+		want     string
+	}{
+		{
+			name:     "sole",
+			raw:      "abc",
+			pipeline: []PDFFilter{{Name: filter.Crypt}},
+			want:     "abc",
+		},
+		{
+			name:     "identity decode parms",
+			raw:      "abc",
+			pipeline: []PDFFilter{{Name: filter.Crypt, DecodeParms: identity}},
+			want:     "abc",
+		},
+		{
+			name:     "leading",
+			raw:      "616263>",
+			pipeline: []PDFFilter{{Name: filter.Crypt}, {Name: filter.ASCIIHex}},
+			want:     "abc",
+		},
+		{
+			name:     "trailing",
+			raw:      "616263>",
+			pipeline: []PDFFilter{{Name: filter.ASCIIHex}, {Name: filter.Crypt}},
+			want:     "abc",
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			sd := StreamDict{
+				Dict:           NewDict(),
+				Raw:            []byte(tt.raw),
+				FilterPipeline: tt.pipeline,
+			}
+
+			if err := sd.Decode(); err != nil {
+				t.Fatal(err)
+			}
+
+			if got := string(sd.Content); got != tt.want {
+				t.Fatalf("got %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEncodeSkipsCryptFilter(t *testing.T) {
+	sd := StreamDict{
+		Dict:    NewDict(),
+		Content: []byte("abc"),
+		FilterPipeline: []PDFFilter{
+			{Name: filter.Crypt},
+			{Name: filter.ASCIIHex},
+		},
+	}
+
+	if err := sd.Encode(); err != nil {
+		t.Fatal(err)
+	}
+
+	sd.Content = nil
+
+	if err := sd.Decode(); err != nil {
+		t.Fatal(err)
+	}
+
+	if got, want := string(sd.Content), "abc"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+}
+
 func TestDecodeRejectsNonTerminalOpaqueImageStream(t *testing.T) {
 	sd := StreamDict{
 		Dict: NewDict(),

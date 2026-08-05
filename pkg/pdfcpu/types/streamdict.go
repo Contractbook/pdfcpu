@@ -275,6 +275,12 @@ func (sd *StreamDict) Encode() error {
 
 	for i := len(sd.FilterPipeline) - 1; i >= 0; i-- {
 		f := sd.FilterPipeline[i]
+
+		if f.Name == filter.Crypt {
+			c = b
+			continue
+		}
+
 		if log.TraceEnabled() {
 			if f.DecodeParms != nil {
 				log.Trace.Printf("encodeStream: encoding filter:%s\ndecodeParms:%s\n", f.Name, f.DecodeParms)
@@ -355,6 +361,11 @@ func (sd *StreamDict) decodeLength(maxLen, maxDecodeBytes int64) ([]byte, error)
 
 	// Apply each filter in the pipeline to result of preceding filter.
 	for idx, f := range sd.FilterPipeline {
+
+		if f.Name == filter.Crypt {
+			c = b
+			continue
+		}
 
 		if preserveEncodedImageFilter(f.Name) {
 			if idx != len(sd.FilterPipeline)-1 {

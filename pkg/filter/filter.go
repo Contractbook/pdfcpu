@@ -36,6 +36,7 @@ const (
 	JBIG2     = "JBIG2Decode" // TODO
 	DCT       = "DCTDecode"
 	JPX       = "JPXDecode" // TODO
+	Crypt     = "Crypt"
 )
 
 // ErrUnsupportedFilter signals unsupported filter encountered.
